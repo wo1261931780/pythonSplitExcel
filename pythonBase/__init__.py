@@ -1,15 +1,22 @@
-
 import pandas as pd
 
+
+# 定义一个分列函数
+def split_column(text):
+	# 根据“代表性奖项”进行分列
+	parts = text.split('代表性奖项', 1)
+	return parts[0], parts[1] if len(parts) > 1 else ''
+
+
 if __name__ == '__main__':
-	# 加载Excel文件，指定openpyxl作为引擎
-	df = pd.read_excel("./demo/teacherInfo.xlsx", engine='openpyxl')
+	# 读取xlsx文件
+	df = pd.read_excel('./demo/demo.xlsx')
 	
-	# 假设我们要分列的列名为'TextColumn'，并且文本用逗号分隔
-	df_split = df['html'].str.split('研究方向', expand=True)
+	# 对每一行应用分列函数
+	df[['前半部分', '后半部分']] = df.apply(lambda row: split_column(row['html']), axis=1, result_type='expand')
 	
-	# 将分列后的数据赋回原始的DataFrame
-	df[df_split.columns] = df_split
+	# 查看结果
+	print(df)
 	
-	# 保存回Excel文件，如果是非常大的文件，可以考虑保存为CSV格式
-	df.to_excel('path_to_your_modified_excel_file.xlsx', index=False)
+	# 如果需要，可以将结果保存回xlsx文件
+	df.to_excel('demo1.xlsx', index=False)
